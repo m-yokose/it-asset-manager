@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ '資産編集' if asset else '資産登録' }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+  <div class="flex items-center gap-2 mb-6">
+    <a href="/assets" class="btn btn-ghost btn-sm">← 戻る</a>
+    <h1 class="text-2xl font-bold">{{ '資産編集' if asset else '新規資産登録' }}</h1>
+  </div>
+
+  <form method="POST" action="{{ '/assets/' + (asset.id | string) + '/edit' if asset else '/assets/new' }}"
+        class="card bg-base-100 shadow p-6 space-y-4">
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">PC名 / ホスト名</span></label>
+        <input type="text" name="hostname" value="{{ asset.hostname or '' }}"
+               class="input input-bordered" placeholder="PC-001" />
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">種別 *</span></label>
+        <select name="asset_type" class="select select-bordered" required>
+          {% for t in ['PC', 'モニタ', 'スマホ', 'タブレット', 'その他'] %}
+          <option value="{{ t }}" {{ 'selected' if asset and asset.asset_type == t else '' }}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">メーカー</span></label>
+        <input type="text" name="manufacturer" value="{{ asset.manufacturer or '' }}"
+               class="input input-bordered" placeholder="Dell" />
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">型番</span></label>
+        <input type="text" name="model" value="{{ asset.model or '' }}"
+               class="input input-bordered" placeholder="Latitude 5540" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">シリアル番号</span></label>
+        <input type="text" name="serial_number" value="{{ asset.serial_number or '' }}"
+               class="input input-bordered font-mono" />
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">購入日</span></label>
+        <input type="date" name="purchase_date"
+               value="{{ asset.purchase_date | string if asset and asset.purchase_date else '' }}"
+               class="input input-bordered" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">ステータス</span></label>
+        <select name="status" class="select select-bordered">
+          {% for s in ['使用中', '保管', '廃棄'] %}
+          <option value="{{ s }}" {{ 'selected' if asset and asset.status == s else ('selected' if not asset and s == '使用中' else '') }}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">利用者</span></label>
+        <select name="assigned_user_id" class="select select-bordered">
+          <option value="">— 未割り当て —</option>
+          {% for user in users %}
+          <option value="{{ user.id }}" {{ 'selected' if asset and asset.assigned_user_id == user.id else '' }}>
+            {{ user.name }}{% if user.department %} ({{ user.department }}){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-control">
+      <label class="label"><span class="label-text">備考</span></label>
+      <textarea name="notes" class="textarea textarea-bordered" rows="3"
+                placeholder="メモや特記事項など">{{ asset.notes or '' }}</textarea>
+    </div>
+
+    <div class="flex gap-2 pt-2">
+      <button type="submit" class="btn btn-primary">{{ '更新' if asset else '登録' }}</button>
+      <a href="/assets" class="btn btn-ghost">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

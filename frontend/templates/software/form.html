@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}ライセンス登録{% endblock %}
+
+{% block content %}
+<div class="max-w-lg">
+  <div class="flex items-center gap-2 mb-6">
+    <a href="/software" class="btn btn-ghost btn-sm">← 戻る</a>
+    <h1 class="text-2xl font-bold">ライセンス登録</h1>
+  </div>
+
+  <form method="POST" action="/software/new" class="card bg-base-100 shadow p-6 space-y-4">
+    <div class="form-control">
+      <label class="label"><span class="label-text">ソフトウェア名 *</span></label>
+      <input type="text" name="software_name" class="input input-bordered"
+             placeholder="Microsoft Office 2024" required />
+    </div>
+
+    <div class="form-control">
+      <label class="label"><span class="label-text">ライセンスキー</span></label>
+      <input type="text" name="license_key" class="input input-bordered font-mono"
+             placeholder="XXXXX-XXXXX-XXXXX-XXXXX" />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">有効期限</span></label>
+        <input type="date" name="expiration_date" class="input input-bordered" />
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">ライセンス数量（席数）</span></label>
+        <input type="number" name="license_count" value="1" min="1"
+               class="input input-bordered" required />
+      </div>
+    </div>
+
+    <div class="flex gap-2 pt-2">
+      <button type="submit" class="btn btn-primary">登録</button>
+      <a href="/software" class="btn btn-ghost">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

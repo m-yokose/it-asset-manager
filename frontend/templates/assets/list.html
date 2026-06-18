@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}ハードウェア資産{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold">ハードウェア資産</h1>
+    <p class="text-base-content/60 text-sm mt-1">
+      全 {{ counts.total }} 件 &nbsp;|&nbsp;
+      使用中 <span class="badge badge-success badge-sm">{{ counts['使用中'] }}</span>
+      保管 <span class="badge badge-warning badge-sm">{{ counts['保管'] }}</span>
+      廃棄 <span class="badge badge-error badge-sm">{{ counts['廃棄'] }}</span>
+    </p>
+  </div>
+  {% if current_account.role == 'admin' %}
+  <a href="/assets/new" class="btn btn-primary btn-sm">＋ 新規登録</a>
+  {% endif %}
+</div>
+
+<!-- フィルタ -->
+<form method="GET" action="/assets" class="flex flex-wrap gap-2 mb-4">
+  <input
+    type="text"
+    name="keyword"
+    value="{{ keyword or '' }}"
+    placeholder="PC名・型番・シリアルで検索"
+    class="input input-bordered input-sm w-64"
+  />
+  <select name="status" class="select select-bordered select-sm">
+    <option value="">全ステータス</option>
+    {% for s in ['使用中', '保管', '廃棄'] %}
+    <option value="{{ s }}" {{ 'selected' if filter_status == s else '' }}>{{ s }}</option>
+    {% endfor %}
+  </select>
+  <select name="asset_type" class="select select-bordered select-sm">
+    <option value="">全種別</option>
+    {% for t in ['PC', 'モニタ', 'スマホ', 'タブレット', 'その他'] %}
+    <option value="{{ t }}" {{ 'selected' if filter_type == t else '' }}>{{ t }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-sm btn-ghost">検索</button>
+  <a href="/assets" class="btn btn-sm btn-ghost">クリア</a>
+</form>
+
+<!-- 資産テーブル -->
+<div class="overflow-x-auto rounded-lg shadow">
+  <table class="table table-zebra bg-base-100 w-full">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>PC名</th>
+        <th>種別</th>
+        <th>メーカー / 型番</th>
+        <th>シリアル</th>
+        <th>購入日</th>
+        <th>ステータス</th>
+        <th>利用者</th>
+        {% if current_account.role == 'admin' %}<th></th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% if assets %}
+      {% for asset in assets %}
+      <tr>
+        <td class="text-base-content/50">{{ asset.id }}</td>
+        <td class="font-medium">{{ asset.hostname or '—' }}</td>
+        <td><span class="badge badge-outline badge-sm">{{ asset.asset_type }}</span></td>
+        <td>{{ asset.manufacturer or '' }}{% if asset.manufacturer and asset.model %} / {% endif %}{{ asset.model or '' }}{% if not asset.manufacturer and not asset.model %}—{% endif %}</td>
+        <td class="font-mono text-xs">{{ asset.serial_number or '—' }}</td>
+        <td>{{ asset.purchase_date or '—' }}</td>
+        <td>
+          {% if asset.status == '使用中' %}
+          <span class="badge badge-success badge-sm">使用中</span>
+          {% elif asset.status == '保管' %}
+          <span class="badge badge-warning badge-sm">保管</span>
+          {% else %}
+          <span class="badge badge-error badge-sm">廃棄</span>
+          {% endif %}
+        </td>
+        <td>{{ asset.user.name if asset.user else '—' }}</td>
+        {% if current_account.role == 'admin' %}
+        <td class="flex gap-1">
+          <a href="/assets/{{ asset.id }}/edit" class="btn btn-ghost btn-xs">編集</a>
+          <form method="POST" action="/assets/{{ asset.id }}/delete"
+                onsubmit="return confirm('削除しますか？')">
+            <button type="submit" class="btn btn-ghost btn-xs text-error">削除</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td colspan="9" class="text-center text-base-content/40 py-10">資産が登録されていません</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}利用者{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">利用者</h1>
+  {% if current_account.role == 'admin' %}
+  <a href="/users/new" class="btn btn-primary btn-sm">＋ 新規登録</a>
+  {% endif %}
+</div>
+
+<div class="overflow-x-auto rounded-lg shadow">
+  <table class="table table-zebra bg-base-100 w-full">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>氏名</th>
+        <th>部署</th>
+        <th>メール</th>
+        <th>保有資産数</th>
+        {% if current_account.role == 'admin' %}<th></th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% if users %}
+      {% for user in users %}
+      <tr>
+        <td class="text-base-content/50">{{ user.id }}</td>
+        <td class="font-medium">{{ user.name }}</td>
+        <td>{{ user.department or '—' }}</td>
+        <td>{{ user.email }}</td>
+        <td><span class="badge badge-neutral badge-sm">{{ user.assets | length }}</span></td>
+        {% if current_account.role == 'admin' %}
+        <td class="flex gap-1">
+          <a href="/users/{{ user.id }}/edit" class="btn btn-ghost btn-xs">編集</a>
+          <form method="POST" action="/users/{{ user.id }}/delete"
+                onsubmit="return confirm('削除しますか？')">
+            <button type="submit" class="btn btn-ghost btn-xs text-error">削除</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td colspan="6" class="text-center text-base-content/40 py-10">利用者が登録されていません</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

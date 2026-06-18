@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}ソフトウェアライセンス{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">ソフトウェアライセンス</h1>
+  {% if current_account.role == 'admin' %}
+  <a href="/software/new" class="btn btn-primary btn-sm">＋ 新規登録</a>
+  {% endif %}
+</div>
+
+{% if expiring %}
+<div class="alert alert-warning mb-4">
+  <span>⚠️ 30日以内に期限切れとなるライセンスが {{ expiring | length }} 件あります</span>
+</div>
+{% endif %}
+
+<div class="overflow-x-auto rounded-lg shadow">
+  <table class="table table-zebra bg-base-100 w-full">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>ソフトウェア名</th>
+        <th>ライセンスキー</th>
+        <th>数量</th>
+        <th>有効期限</th>
+        {% if current_account.role == 'admin' %}<th></th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% if licenses %}
+      {% for lic in licenses %}
+      {% set is_expiring = lic in expiring %}
+      <tr class="{{ 'bg-warning/10' if is_expiring else '' }}">
+        <td class="text-base-content/50">{{ lic.id }}</td>
+        <td class="font-medium">{{ lic.software_name }}</td>
+        <td class="font-mono text-xs">{{ lic.license_key or '—' }}</td>
+        <td><span class="badge badge-neutral badge-sm">{{ lic.license_count }} 席</span></td>
+        <td>
+          {% if lic.expiration_date %}
+          <span class="{{ 'text-warning font-bold' if is_expiring else '' }}">
+            {{ lic.expiration_date }}{% if is_expiring %} ⚠️{% endif %}
+          </span>
+          {% else %}—{% endif %}
+        </td>
+        {% if current_account.role == 'admin' %}
+        <td>
+          <form method="POST" action="/software/{{ lic.id }}/delete"
+                onsubmit="return confirm('削除しますか？')">
+            <button type="submit" class="btn btn-ghost btn-xs text-error">削除</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td colspan="6" class="text-center text-base-content/40 py-10">ライセンスが登録されていません</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

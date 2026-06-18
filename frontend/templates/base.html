@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}IT資産管理{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+
+<div class="drawer lg:drawer-open">
+  <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
+
+  <!-- ページコンテンツ -->
+  <div class="drawer-content flex flex-col">
+    <!-- ナビバー（モバイル） -->
+    <div class="navbar bg-base-100 shadow-sm lg:hidden">
+      <label for="drawer-toggle" class="btn btn-ghost btn-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </label>
+      <span class="text-lg font-bold ml-2">IT資産管理</span>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <main class="flex-1 p-6">
+      {% if flash %}
+      <div class="alert alert-{{ flash.type }} mb-4">
+        <span>{{ flash.message }}</span>
+      </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- サイドバー -->
+  <div class="drawer-side z-40">
+    <label for="drawer-toggle" class="drawer-overlay"></label>
+    <aside class="bg-base-100 w-60 min-h-full flex flex-col shadow-lg">
+      <div class="px-4 py-5 border-b border-base-200">
+        <span class="text-xl font-bold text-primary">IT資産管理</span>
+      </div>
+
+      <ul class="menu menu-md flex-1 p-4 gap-1">
+        <li class="menu-title text-xs">資産管理</li>
+        <li>
+          <a href="/assets" class="{{ 'active' if request.url.path.startswith('/assets') else '' }}">
+            💻 ハードウェア資産
+          </a>
+        </li>
+        <li>
+          <a href="/software" class="{{ 'active' if request.url.path.startswith('/software') else '' }}">
+            📦 ソフトウェアライセンス
+          </a>
+        </li>
+
+        <li class="menu-title text-xs mt-4">マスタ</li>
+        <li>
+          <a href="/users" class="{{ 'active' if request.url.path.startswith('/users') else '' }}">
+            👤 利用者
+          </a>
+        </li>
+      </ul>
+
+      <div class="p-4 border-t border-base-200">
+        {% if current_account %}
+        <div class="text-sm text-base-content/60 mb-2">{{ current_account.username }}</div>
+        <form method="POST" action="/auth/logout">
+          <button class="btn btn-ghost btn-sm w-full">ログアウト</button>
+        </form>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</div>
+
+</body>
+</html>

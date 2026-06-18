@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ '利用者編集' if user else '利用者登録' }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg">
+  <div class="flex items-center gap-2 mb-6">
+    <a href="/users" class="btn btn-ghost btn-sm">← 戻る</a>
+    <h1 class="text-2xl font-bold">{{ '利用者編集' if user else '新規利用者登録' }}</h1>
+  </div>
+
+  <form method="POST" action="{{ '/users/' + (user.id | string) + '/edit' if user else '/users/new' }}"
+        class="card bg-base-100 shadow p-6 space-y-4">
+
+    <div class="form-control">
+      <label class="label"><span class="label-text">氏名 *</span></label>
+      <input type="text" name="name" value="{{ user.name if user else '' }}"
+             class="input input-bordered" required />
+    </div>
+
+    <div class="form-control">
+      <label class="label"><span class="label-text">部署</span></label>
+      <input type="text" name="department" value="{{ user.department or '' if user else '' }}"
+             class="input input-bordered" />
+    </div>
+
+    <div class="form-control">
+      <label class="label"><span class="label-text">メールアドレス *</span></label>
+      <input type="email" name="email" value="{{ user.email if user else '' }}"
+             class="input input-bordered" required />
+    </div>
+
+    <div class="flex gap-2 pt-2">
+      <button type="submit" class="btn btn-primary">{{ '更新' if user else '登録' }}</button>
+      <a href="/users" class="btn btn-ghost">キャンセル</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

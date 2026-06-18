@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ログイン — IT資産管理</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-base-200 min-h-screen flex items-center justify-center">
+
+<div class="card w-96 bg-base-100 shadow-xl">
+  <div class="card-body">
+    <h1 class="card-title text-2xl justify-center mb-2">IT資産管理</h1>
+    <p class="text-center text-base-content/60 text-sm mb-4">ログインしてください</p>
+
+    {% if error %}
+    <div class="alert alert-error text-sm mb-4">
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/auth/login" class="space-y-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">ユーザー名</span></label>
+        <input
+          type="text"
+          name="username"
+          class="input input-bordered"
+          placeholder="username"
+          required
+          autofocus
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">パスワード</span></label>
+        <input
+          type="password"
+          name="password"
+          class="input input-bordered"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full mt-2">ログイン</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
