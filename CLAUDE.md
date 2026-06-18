@@ -12,36 +12,32 @@ IT資産管理Webアプリケーション。FastAPI + Jinja2 + HTMX + Tailwind C
 ```bash
 # --- 環境構築（初回のみ、backend/ ディレクトリで実行）---
 
-# venv 作成
-python -m venv .venv
+# 依存関係インストール（.venv を自動作成）
+uv sync
 
-# venv 有効化
-.venv\Scripts\activate      # Windows
-source .venv/bin/activate   # macOS / Linux
+# 開発用依存関係（pytest 等）も含む場合
+uv sync --dev
 
-# 依存関係インストール
-pip install -r requirements.txt
-
-# --- 以降はすべて venv を有効化した状態で backend/ から実行 ---
+# --- 以降はすべて backend/ から実行 ---
 
 # 初回: 管理者アカウント作成
-python -m scripts.create_admin
+uv run python -m scripts.create_admin
 
 # 開発サーバー起動
-uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload
 
 # マイグレーション
-alembic upgrade head
-alembic revision --autogenerate -m "description"
-alembic downgrade -1
+uv run alembic upgrade head
+uv run alembic revision --autogenerate -m "description"
+uv run alembic downgrade -1
+
+# テスト
+uv run pytest
+uv run pytest tests/test_assets.py
+uv run pytest -k "test_create"
 
 # Docker で起動 (プロジェクトルートで実行)
 docker compose up --build
-
-# テスト
-pytest
-pytest tests/test_assets.py
-pytest -k "test_create"
 ```
 
 ## Architecture
@@ -61,7 +57,8 @@ it-asset-manager/
 │   │   ├── services/            # DBロジック (router から呼び出す)
 │   │   └── api/v1/              # FastAPI ルーター (画面+フォーム処理)
 │   ├── alembic/                 # マイグレーション
-│   └── scripts/create_admin.py  # 初期管理者作成
+│   ├── scripts/create_admin.py  # 初期管理者作成
+│   └── pyproject.toml           # 依存関係定義 (uv で管理)
 └── frontend/
     ├── templates/               # Jinja2 テンプレート (base.html + カテゴリ別)
     ├── static/                  # CSS / JS
@@ -117,3 +114,4 @@ Docker では環境変数 `TEMPLATES_DIR=/frontend/templates` でオーバーラ
 | 設定管理 | pydantic-settings |
 | インポート | openpyxl, pandas |
 | テスト | pytest, httpx (TestClient) |
+| パッケージ管理 | uv |

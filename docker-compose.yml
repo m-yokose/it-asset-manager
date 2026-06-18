@@ -28,11 +28,15 @@ services:
       STATIC_DIR: /frontend/static
     volumes:
       - ./backend:/app
+      - backend_venv:/app/.venv   # .venv をボリュームで保持しソースマウントと分離
       - ./frontend:/frontend
     depends_on:
       db:
         condition: service_healthy
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: >
+      sh -c "uv sync --dev &&
+             uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
 volumes:
   postgres_data:
+  backend_venv:
